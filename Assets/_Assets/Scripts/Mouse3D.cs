@@ -2,34 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Mouse3D : MonoBehaviour
+public class Mouse3D
 {
-    [SerializeField] private Camera mainCam;
-    [SerializeField] private LayerMask layerMask;
-    public static Mouse3D Instance { get; private set; }
-    private void Awake()
-    {
-        // If there is an instance, and it's not me, delete myself.
+    private Camera mainCam;
+    private LayerMask layerMask;
+    public static Mouse3D Instance { get { return instance; }    }
 
-        if (Instance != null && Instance != this)
+    private static Mouse3D instance = new Mouse3D();
+
+    private Mouse3D() { }
+
+    public static Vector3 GetMouseWorldPos(LayerMask layerMask) => Instance.GetMouseWorldPos_Instance(layerMask);
+    private Vector3 GetMouseWorldPos_Instance(LayerMask layerMask)
+    {
+        if (mainCam == null)
         {
-            Destroy(this);
+            mainCam = Camera.main;
         }
-        else
-        {
-            Instance = this;
-        }
-    }
-
-    private void Start()
-    {
-        mainCam = Camera.main;
-    }
-
-
-    public static Vector3 GetMouseWorldPos() => Instance.GetMouseWorldPos_Instance();
-    private Vector3 GetMouseWorldPos_Instance()
-    {
        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
         if(Physics.Raycast(ray, out RaycastHit hit, 999f, layerMask))
         {
@@ -40,4 +29,5 @@ public class Mouse3D : MonoBehaviour
             return Vector3.zero;
         }
     }
+
 }

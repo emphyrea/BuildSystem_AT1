@@ -8,6 +8,7 @@ public class GridBuildingSystem : MonoBehaviour
     public static GridBuildingSystem Instance;
 
     [SerializeField] private List<PlacedObjectTypeSO> placedObjectTypeSOList;
+    [SerializeField] private LayerMask layerMask;
     private PlacedObjectTypeSO placedObjectTypeSO;
 
     private GridXZ<GridObject> grid;
@@ -95,7 +96,7 @@ public class GridBuildingSystem : MonoBehaviour
 
     internal Vector3 GetMouseWorldSnappedPos()
     {
-        Vector3 mousePosition = Mouse3D.GetMouseWorldPos();
+        Vector3 mousePosition = Mouse3D.GetMouseWorldPos(layerMask);
         grid.GetXZ(mousePosition, out int x, out int z);
 
         if (placedObjectTypeSO != null)
@@ -115,7 +116,7 @@ public class GridBuildingSystem : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0) && placedObjectTypeSO != null)
         {
-            grid.GetXZ(Mouse3D.GetMouseWorldPos(), out int x, out int z);
+            grid.GetXZ(Mouse3D.GetMouseWorldPos(layerMask), out int x, out int z);
 
            List<Vector2Int> gridPosList = placedObjectTypeSO.GetGridPosList(new Vector2Int(x, z), dir);
             bool canBuild = true;
@@ -174,7 +175,7 @@ public class GridBuildingSystem : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            GridObject gridObj = grid.GetGridObject(Mouse3D.GetMouseWorldPos());
+            GridObject gridObj = grid.GetGridObject(Mouse3D.GetMouseWorldPos(layerMask));
             PlacedObject placedObj = gridObj.GetPlacedObject();
             if(placedObj != null)
             {

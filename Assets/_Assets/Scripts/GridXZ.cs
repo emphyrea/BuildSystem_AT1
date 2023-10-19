@@ -42,8 +42,8 @@ public class GridXZ<TGridObject>
 
     public void GetXZ(Vector3 worldPos, out int x, out int z) //convert world pos to grid pos
     {
-        x = Mathf.FloorToInt((worldPos - originPos).x / cellSize);
-        z = Mathf.FloorToInt((worldPos - originPos).z / cellSize);
+        x = Mathf.CeilToInt((worldPos - originPos).x / cellSize);
+        z = Mathf.CeilToInt((worldPos - originPos).z / cellSize);
     }
 
     public void SetGridObject(Vector3 worldPos, TGridObject val)
