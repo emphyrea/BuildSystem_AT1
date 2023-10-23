@@ -12,13 +12,13 @@ public class GridBuildingSystem : MonoBehaviour
 
     [SerializeField] private LayerMask layerMask;
 
-    const float GridHeight = 1f;
+    const float GridHeight = 2f;
 
     [SerializeField] private List<FloorEdgeObjTypeSO> floorEdgeObjTypeSOList=null;
     private FloorEdgeObjTypeSO floorEdgeObjTypeSO;
 
-    private List<GridXZ<GridObject>> gridList;
-    private GridXZ<GridObject> grid;
+    [SerializeField] List<GridXZ<GridObject>> gridList;
+    private GridXZ<GridObject> selectedgrid;
 
     private PlaceObjType placeObjType;
     private PlacedObjectTypeSO.Dir dir = PlacedObjectTypeSO.Dir.Down;
@@ -51,14 +51,16 @@ public class GridBuildingSystem : MonoBehaviour
         float cellSize = 1f;
 
         gridList = new List<GridXZ<GridObject>>();
-        int gridLevels = 3;
+        int gridLevels = 4;
         float gridLevelSize = GridHeight;
         for(int i = 0; i < gridLevels; i++)
         {
            GridXZ<GridObject> grid = new GridXZ<GridObject>(gridWidth, gridHeight, cellSize, new Vector3(0, gridLevelSize * i, 0), (GridXZ<GridObject> g, int x, int z) => new GridObject(g, x, z));
             gridList.Add(grid);
         }
-        grid = gridList[0];
+
+        selectedgrid = gridList[0];
+
         placedObjectTypeSO = null;
     }
 
@@ -73,6 +75,7 @@ public class GridBuildingSystem : MonoBehaviour
             this.grid = grid;
             this.x = x;
             this.z = z;
+            placedObj = null;
         }
 
         public void SetPlacedObj(PlacedObject placedObj)
@@ -95,10 +98,6 @@ public class GridBuildingSystem : MonoBehaviour
             return placedObj == null;
         }
 
-        public override string ToString()
-        {
-            return x + "," + z + "\n" + placedObj;
-        }
     }
 
     public PlacedObjectTypeSO GetPlacedObjectTypeSO()
@@ -126,12 +125,12 @@ public class GridBuildingSystem : MonoBehaviour
     internal Vector3 GetMouseWorldSnappedPos()
     {
         Vector3 mousePosition = Mouse3D.GetMouseWorldPos(layerMask);
-        grid.GetXZ(mousePosition, out int x, out int z);
+        selectedgrid.GetXZ(mousePosition, out int x, out int z);
 
         if (placedObjectTypeSO != null)
         {
             Vector2Int rotationOffset = placedObjectTypeSO.GetRotationOffset(dir);
-            Vector3 placedObjectWorldPosition = grid.GetWorldPos(x, z) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * grid.GetCellSize();
+            Vector3 placedObjectWorldPosition = selectedgrid.GetWorldPos(x, z) + new Vector3(rotationOffset.x, 0, rotationOffset.y) * selectedgrid.GetCellSize();
             return placedObjectWorldPosition;
         }
         else
@@ -164,7 +163,7 @@ public class GridBuildingSystem : MonoBehaviour
 
     public int GetActiveGridLevel()
     {
-        return gridList.IndexOf(grid);
+        return gridList.IndexOf(selectedgrid);
     }
 
     private void Update()
@@ -185,7 +184,7 @@ public class GridBuildingSystem : MonoBehaviour
         if(isDemolishActive && Input.GetMouseButtonDown(0))
         {
             Vector3 mousePosition = Mouse3D.GetMouseWorldPos(layerMask);
-            PlacedObject placedObject = grid.GetGridObject(mousePosition).GetPlacedObject();
+            PlacedObject placedObject = selectedgrid.GetGridObject(mousePosition).GetPlacedObject();
             if (placedObject != null)
             {
                 // Demolish
@@ -194,7 +193,7 @@ public class GridBuildingSystem : MonoBehaviour
                 List<Vector2Int> gridPositionList = placedObject.GetGridPosList();
                 foreach (Vector2Int gridPosition in gridPositionList)
                 {
-                    grid.GetGridObject(gridPosition.x, gridPosition.y).ClearPlacedObj();
+                    selectedgrid.GetGridObject(gridPosition.x, gridPosition.y).ClearPlacedObj();
                 }
             }
         }
@@ -221,13 +220,13 @@ public class GridBuildingSystem : MonoBehaviour
 
     public bool IsValidGridPos(Vector2Int gridPosition)
     {
-        return grid.IsValidGridPos(gridPosition);
+        return selectedgrid.IsValidGridPos(gridPosition);
     }
 
     #region TypeSelect
     private void HandleTypeSelect()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha0)) { SetDemolishActive(); }
+        if (Input.GetKeyDown(KeyCode.X)) { SetDemolishActive(); }
     }
     public void SelectPlacedObjectTypeSO(PlacedObjectTypeSO placedObjectTypeSO)
     {
@@ -248,8 +247,8 @@ public class GridBuildingSystem : MonoBehaviour
     {
         Vector3 mousePos = Mouse3D.GetMouseWorldPos(layerMask);
         float gridHeight = GridHeight;
-        int newGridIndex = Mathf.RoundToInt (mousePos.y / GridHeight);
-        grid = gridList[newGridIndex];
+        int newGridIndex = Mathf.RoundToInt (mousePos.y / gridHeight);
+        selectedgrid = gridList[newGridIndex];
         OnActiveGridLevelChanged?.Invoke(this, EventArgs.Empty);
 
     }
@@ -258,8 +257,8 @@ public class GridBuildingSystem : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F))
         {
-            int nextSelectedGridIndex = (gridList.IndexOf(grid) + 1) % gridList.Count;
-            grid = gridList[nextSelectedGridIndex];
+            int nextSelectedGridIndex = (gridList.IndexOf(selectedgrid) + 1) % gridList.Count;
+            selectedgrid = gridList[nextSelectedGridIndex];
             OnActiveGridLevelChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -283,7 +282,7 @@ public class GridBuildingSystem : MonoBehaviour
     //overrides
     public bool TryPlaceObj(Vector2Int placedObjectOrigin, PlacedObjectTypeSO placedObjectTypeSO, PlacedObjectTypeSO.Dir dir, out PlacedObject placedObject)
     {
-        return TryPlaceObj(grid, placedObjectOrigin, placedObjectTypeSO, dir, out placedObject);
+        return TryPlaceObj(selectedgrid, placedObjectOrigin, placedObjectTypeSO, dir, out placedObject);
     }
     public bool TryPlaceObj(GridXZ<GridObject> grid, Vector2Int placedObjOrigin, PlacedObjectTypeSO placedObjectTypeSO, PlacedObjectTypeSO.Dir dir, out PlacedObject placedObj)
     {
@@ -317,6 +316,7 @@ public class GridBuildingSystem : MonoBehaviour
                 grid.GetGridObject(gridPos.x, gridPos.y).SetPlacedObj(placedObj);
             }
 
+
             OnObjectPlaced?.Invoke(placedObj, EventArgs.Empty);
 
             return true;
@@ -338,14 +338,13 @@ public class GridBuildingSystem : MonoBehaviour
             {
                 Vector3 mousePos = Mouse3D.GetMouseWorldPos(layerMask);
 
-                grid.GetXZ(mousePos, out int x, out int z);
+                selectedgrid.GetXZ(mousePos, out int x, out int z);
 
                 Vector2Int placedObjOrigin = new Vector2Int(x, z);
 
                 if (TryPlaceObj(placedObjOrigin, placedObjectTypeSO, dir, out PlacedObject placedObj))
                 {
                     //place object
-                    Debug.Log("Placed");
                 }
                 else
                 {

@@ -46,7 +46,7 @@ public class BuildingGhost : MonoBehaviour
                 visual.parent = transform;
                 visual.localPosition = Vector3.zero;
                 visual.localEulerAngles = Vector3.zero;
-                SetLayerRecursive(visual.gameObject, 14);
+                SetLayerRecursive(visual.gameObject, 11);
             }
         }
     }
