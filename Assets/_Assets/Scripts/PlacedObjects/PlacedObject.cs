@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class PlacedObject : MonoBehaviour
         return placedObject;
     }
 
-    public void DestroySelf()
+    public virtual void DestroySelf()
     {
         Destroy(gameObject);
     }

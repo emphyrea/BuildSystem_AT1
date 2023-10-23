@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objName: Foundation
   prefab: {fileID: 6269574590361392423, guid: 14f4b34fcd239c44995c9268abb6edb4, type: 3}
-  visual: {fileID: 6269574590361392423, guid: 5e05b452e984d8546b7e820810eb8804, type: 3}
-  width: 1
-  height: 1
+  visual: {fileID: 6269574590361392423, guid: 2941fa6e3f4b6a044838478ef88330be, type: 3}
+  width: 2
+  height: 2

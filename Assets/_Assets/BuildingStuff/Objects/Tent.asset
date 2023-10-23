@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objName: Tent
   prefab: {fileID: 6269574590361392423, guid: 564b29e8a767428439d9771315e5b2cd, type: 3}
-  visual: {fileID: 6269574590361392423, guid: 19439031c0f049b4f970d8ff3e72849a, type: 3}
-  width: 1
-  height: 1
+  visual: {fileID: 6269574590361392423, guid: 5b3caa5fbcb23874583e4658023b51e7, type: 3}
+  width: 2
+  height: 2

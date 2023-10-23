@@ -95,4 +95,19 @@ public class GridXZ<TGridObject>
     {
         return cellSize;
     }
+
+    internal bool IsValidGridPos(Vector2Int gridPos)
+    {
+        int x = gridPos.x;
+        int z = gridPos.y;
+
+        if (x >= 0 && z >= 0 && x < width && z < height)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

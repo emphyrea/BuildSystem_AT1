@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objName: WorkBench
   prefab: {fileID: 3209784201153451926, guid: 111a171c2451e4e46b96364d5d341ddc, type: 3}
-  visual: {fileID: 3209784201153451926, guid: 418c48d33b0aa1e46bfce06679e05bb2, type: 3}
-  width: 1
+  visual: {fileID: 3209784201153451926, guid: 688ec0946f2675446839119af3d1532a, type: 3}
+  width: 2
   height: 1
