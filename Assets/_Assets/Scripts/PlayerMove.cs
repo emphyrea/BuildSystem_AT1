@@ -64,5 +64,9 @@ public class PlayerMove : MonoBehaviour
             playerCam.transform.localRotation = Quaternion.Euler(rotX, 0, 0);
             transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
         }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 }

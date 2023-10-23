@@ -22,10 +22,9 @@ public class BuildingGhost : MonoBehaviour
     private void LateUpdate()
     {
         Vector3 targetPosition = GridBuildingSystem.Instance.GetMouseWorldSnappedPos();
-        //targetPosition.y += .1f;
         transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * 15f);
 
-        transform.rotation = Quaternion.Lerp(transform.rotation, GridBuildingSystem.Instance.GetPlacedObjRot(), Time.deltaTime * 25f);
+        transform.rotation = Quaternion.Lerp(transform.rotation, GridBuildingSystem.Instance.GetPlacedObjRot(), Time.deltaTime * 15f);
     }
 
     private void RefreshVisual()

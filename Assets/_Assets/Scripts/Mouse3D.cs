@@ -2,27 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Mouse3D
+public class Mouse3D : MonoBehaviour
 {
     private Camera mainCam;
-    private LayerMask layerMask;
-    public static Mouse3D Instance { get { return instance; }    }
-
-    private static Mouse3D instance = new Mouse3D();
-
-    private Mouse3D() { }
-
-    public static Vector3 GetMouseWorldPos(LayerMask layerMask) => Instance.GetMouseWorldPos_Instance(layerMask);
-    private Vector3 GetMouseWorldPos_Instance(LayerMask layerMask)
+    [SerializeField] private LayerMask mouseColliderLayerMask = new LayerMask();
+    public static Mouse3D Instance { get; private set; }
+    private void Awake()
     {
-        if (mainCam == null)
+        Instance = this;
+    }
+    private void Update()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, mouseColliderLayerMask))
         {
-            mainCam = Camera.main;
+            transform.position = raycastHit.point;
         }
-       Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-        if(Physics.Raycast(ray, out RaycastHit hit, 999f, layerMask))
+    }
+
+
+    public static Vector3 GetMouseWorldPos() => Instance.GetMouseWorldPos_Instance();
+    private Vector3 GetMouseWorldPos_Instance()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, mouseColliderLayerMask))
         {
-            return hit.point;
+            return raycastHit.point;
         }
         else
         {

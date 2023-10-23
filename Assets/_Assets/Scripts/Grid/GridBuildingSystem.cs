@@ -124,7 +124,7 @@ public class GridBuildingSystem : MonoBehaviour
 
     internal Vector3 GetMouseWorldSnappedPos()
     {
-        Vector3 mousePosition = Mouse3D.GetMouseWorldPos(layerMask);
+        Vector3 mousePosition = Mouse3D.GetMouseWorldPos();
         selectedgrid.GetXZ(mousePosition, out int x, out int z);
 
         if (placedObjectTypeSO != null)
@@ -183,7 +183,7 @@ public class GridBuildingSystem : MonoBehaviour
     {
         if(isDemolishActive && Input.GetMouseButtonDown(0))
         {
-            Vector3 mousePosition = Mouse3D.GetMouseWorldPos(layerMask);
+            Vector3 mousePosition = Mouse3D.GetMouseWorldPos();
             PlacedObject placedObject = selectedgrid.GetGridObject(mousePosition).GetPlacedObject();
             if (placedObject != null)
             {
@@ -226,7 +226,11 @@ public class GridBuildingSystem : MonoBehaviour
     #region TypeSelect
     private void HandleTypeSelect()
     {
-        if (Input.GetKeyDown(KeyCode.X)) { SetDemolishActive(); }
+        if (Input.GetKeyDown(KeyCode.X)) 
+        {
+            DeselectObjectType();
+            SetDemolishActive(); 
+        }
     }
     public void SelectPlacedObjectTypeSO(PlacedObjectTypeSO placedObjectTypeSO)
     {
@@ -245,7 +249,7 @@ public class GridBuildingSystem : MonoBehaviour
 
     private void HandleGridSelectAutomated()
     {
-        Vector3 mousePos = Mouse3D.GetMouseWorldPos(layerMask);
+        Vector3 mousePos = Mouse3D.GetMouseWorldPos();
         float gridHeight = GridHeight;
         int newGridIndex = Mathf.RoundToInt (mousePos.y / gridHeight);
         selectedgrid = gridList[newGridIndex];
@@ -331,12 +335,16 @@ public class GridBuildingSystem : MonoBehaviour
     #endregion TryPlaceObj
 
     private void HandleNormalObjPlacement()
-    {
+    {  if(IsDemolishActive())
+        {
+            isDemolishActive = false;
+        }
+
         if(placeObjType == PlaceObjType.GridObj)
         {
             if(Input.GetMouseButtonDown(0) && placedObjectTypeSO != null)
             {
-                Vector3 mousePos = Mouse3D.GetMouseWorldPos(layerMask);
+                Vector3 mousePos = Mouse3D.GetMouseWorldPos();
 
                 selectedgrid.GetXZ(mousePos, out int x, out int z);
 
@@ -358,7 +366,12 @@ public class GridBuildingSystem : MonoBehaviour
 
     private void HandleEdgeObjPlacement() //Nesting
     {
-        if(placeObjType == PlaceObjType.EdgeObj)
+        if (IsDemolishActive())
+        {
+            isDemolishActive = false;
+        }
+
+        if (placeObjType == PlaceObjType.EdgeObj)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, layerMask))
